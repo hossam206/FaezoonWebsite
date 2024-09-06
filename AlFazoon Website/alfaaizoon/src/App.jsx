@@ -1,23 +1,22 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  json,
+  RouterProvider,
+} from "react-router-dom";
 import Header from "./_Components/Header";
 import Dashboard from "./_Components/Dashboard";
 import UserPage from "./_Components/UserPage";
-
-import { useEffect, useState } from "react";
 import NotFind from "./_Components/NotFind";
+import { useEffect } from "react";
 
 function App() {
-  
-  const Role = async() => {
-    const token =await JSON.parse(localStorage.getItem("token")); // "token" is the key used when storing
-    setUserRole(await token?.role);
-  };
-  // const [UserRole, setUserRole] = useState(null);
-  useEffect(() => {
-    Role();
-  }, []);
-  const [UserRole, setUserRole] = useState(null);
+  const userRole = JSON.parse(localStorage.getItem("token"));
 
+
+
+  //const decodedToken =  jwtDecode(findUser.token);
+  //console.log(decodedToken)
 
   const router = createBrowserRouter([
     {
@@ -27,15 +26,15 @@ function App() {
 
     {
       path: "Dashboard",
-      element: UserRole == "admin" ? <Dashboard /> : <NotFind />,
+      element: userRole?.role === "admin" ? <Dashboard /> : <NotFind />,
     },
 
     {
       path: "UserPage",
-      element:
-        UserRole == "user" || UserRole == "admin" ? <UserPage /> : <NotFind />,
+      element: userRole?.role === "user" ? <UserPage /> : <NotFind />,
     },
   ]);
+
   return <RouterProvider router={router} />;
 }
 

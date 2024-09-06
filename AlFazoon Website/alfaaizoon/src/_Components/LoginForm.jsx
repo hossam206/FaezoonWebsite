@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import icons
 import { BiSolidHide } from "react-icons/bi";
 import { BiShow } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from "react-router";
-import { VerifyLogin } from "../Services/LoginService";
 import { jwtDecode } from "jwt-decode";
+import useLogin from "../Services/LoginService";
 
 const LoginInfo = {
   userName: "",
@@ -13,6 +13,8 @@ const LoginInfo = {
 };
 function LoginForm({ hideform, user }) {
   const [formData, setFormData] = useState(LoginInfo);
+  //const [lstrole, setRole] = useState('');
+  // const [lstrole, setRole] = useState(null);
   const navigate = useNavigate();
   // handle show or hide password
   const [passwordstatus, showpassword] = useState(false);
@@ -20,7 +22,9 @@ function LoginForm({ hideform, user }) {
     showpassword(!passwordstatus);
   };
   // verify usertype and password & id
-  const [errormsg, seterrormsg] = useState(false);
+  const [errormsg, setErrormsg] = useState(false);
+
+  const { VerifyLogin } = useLogin();
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -30,19 +34,12 @@ function LoginForm({ hideform, user }) {
 
   const Login = async (e) => {
     e.preventDefault();
+
     try {
-      const findUser = await VerifyLogin(formData); // Ensure GetAllTeachers returns a promise
-      const decodedToken = jwtDecode(findUser.token);
-      localStorage.setItem("token", JSON.stringify(decodedToken));
-      localStorage.setItem("Maintoken", JSON.stringify(findUser.token));
-      if (decodedToken.role == "admin") {
-        navigate("/Dashboard");
-      } else if (decodedToken.role == "user") {
-        navigate("/UserPage");
-      }
+      await VerifyLogin(formData);
     } catch (error) {
       console.error("Failed to fetch Students:", error);
-      seterrormsg(true);
+      setErrormsg(true);
     }
   };
 
@@ -62,7 +59,6 @@ function LoginForm({ hideform, user }) {
 
           <form
             onSubmit={Login}
-            action="#"
             className="mb-0 mt-2 space-y-4 rounded-lg py-2  "
           >
             <div>
