@@ -7,15 +7,16 @@ import { useEffect, useState } from "react";
 import NotFind from "./_Components/NotFind";
 
 function App() {
-  const [UserRole, setUserRole] = useState(null);
-  const Role = () => {
-    const token = JSON.parse(localStorage.getItem("token")); // "token" is the key used when storing
-    setUserRole(token?.role);
+  
+  const Role = async() => {
+    const token =await JSON.parse(localStorage.getItem("token")); // "token" is the key used when storing
+    setUserRole(await token?.role);
   };
   // const [UserRole, setUserRole] = useState(null);
   useEffect(() => {
     Role();
   }, []);
+  const [UserRole, setUserRole] = useState(null);
 
 
   const router = createBrowserRouter([
@@ -26,7 +27,7 @@ function App() {
 
     {
       path: "Dashboard",
-      element: UserRole === "admin" ? <Dashboard /> : <NotFind />,
+      element: UserRole == "admin" ? <Dashboard /> : <NotFind />,
     },
 
     {
