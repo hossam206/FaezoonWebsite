@@ -1,35 +1,7 @@
 import Teacher from "./../models/teachers.js"; // Import the Teacher model
-import jwt from 'jsonwebtoken'
-
-export const login = async (req, res) => {
-  const { userName, password } = req.body;
-
-  try {
-    const user = await Teacher.findOne({ userName });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid username or password" });
-    }
+import jwt from "jsonwebtoken";
 
 
-
-    if (user.password !== password) {
-      return res.status(400).json({ message: "Invalid username or password" });
-    }
-
-    const secretKey = process.env.secretKey;
-    console.log(secretKey)
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      secretKey,
-      { expiresIn: '1d' }
-    );
-    console.log(token)
-
-    res.status(200).json(token);
-  } catch (e) {
-    res.send(e);
-  }
-};
 
 // Get a teacher by ID
 export const getTeacher = async (req, res) => {
@@ -47,7 +19,7 @@ export const getTeacher = async (req, res) => {
 // Get all teachers
 export const getTeachers = async (req, res) => {
   try {
-    const teachers = await Teacher.find();
+    const teachers = await Teacher.find({ role: 'user' });
     res.status(200).json(teachers);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -116,7 +88,7 @@ export const updateTeacher = async (req, res) => {
 // Get the number of teachers
 export const getTeachersCount = async (req, res) => {
   try {
-    const count = await Teacher.countDocuments();
+    const count = await Teacher.countDocuments() - 1;
     res.status(200).json({ count });
   } catch (error) {
     res.status(500).json({ error: error.message });

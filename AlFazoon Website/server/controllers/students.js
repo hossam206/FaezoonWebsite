@@ -35,24 +35,24 @@ export const addStudent = async (req, res) => {
         // if (!teacher) {
         //     throw new Error('Teacher not found');
         // }
-          //encrypt password
+        //encrypt password
 
-   // let cryptedPassword = req.body.password  
-    const newStudent = new Student({
-      firstName: req.body.firstName,
-      middleName: req.body.middleName,
-      lastName: req.body.lastName,
-      age: req.body.age,
-      whatsapp: req.body.whatsapp,
-      phone: req.body.phone,
-      TeacherName: req.body.TeacherName,
-      birthDay: req.body.birthDay,
-      nationality: req.body.nationality,
-      address: req.body.address,
-      ClassNum: req.body.ClassNum,
-    });
+        // let cryptedPassword = req.body.password  
+        const newStudent = new Student({
+            firstName: req.body.firstName,
+            middleName: req.body.middleName,
+            lastName: req.body.lastName,
+            age: req.body.age,
+            whatsapp: req.body.whatsapp,
+            phone: req.body.phone,
+            TeacherName: req.body.TeacherName,
+            birthDay: req.body.birthDay,
+            nationality: req.body.nationality,
+            address: req.body.address,
+            ClassNum: req.body.ClassNum,
+        });
 
-      
+
 
         await newStudent.save();
         res.status(201).json({ message: 'Student added successfully' });

@@ -5,6 +5,7 @@ import { BiShow } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { VerifyLogin } from "../Services/LoginService";
+import { jwtDecode } from "jwt-decode";
 
 const LoginInfo = {
   userName: "",
@@ -31,8 +32,12 @@ function LoginForm({ hideform, user }) {
     e.preventDefault();
     try {
       const findUser = await VerifyLogin(formData); // Ensure GetAllTeachers returns a promise
-
-      if (findUser) {
+      const decodedToken = jwtDecode(findUser.token);
+      localStorage.setItem("token", JSON.stringify(decodedToken));
+      localStorage.setItem("Maintoken", JSON.stringify(findUser.token));
+      if (decodedToken.role == "admin") {
+        navigate("/Dashboard");
+      } else if (decodedToken.role == "user") {
         navigate("/UserPage");
       }
     } catch (error) {
@@ -58,12 +63,8 @@ function LoginForm({ hideform, user }) {
           <form
             onSubmit={Login}
             action="#"
-            className="mb-0 mt-2 space-y-4 rounded-lg   "
+            className="mb-0 mt-2 space-y-4 rounded-lg py-2  "
           >
-            <p className="text-center text-lg font-medium text-gray-800">
-              Log in as {user}
-            </p>
-
             <div>
               <label htmlFor="email" className="sr-only">
                 UserID

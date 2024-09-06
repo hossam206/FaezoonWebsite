@@ -26,6 +26,9 @@ export default function Students() {
   const [formData, setFormData] = useState(initialContent);
   const [selectedStudent, setselectedStudent] = useState("");
   const [AllStudents, setStudents] = useState([]);
+  // show popUpmsg while doing any action
+  const [popUpmsg, setpopUpmsg] = useState(false);
+  const [actionmsg, setactionmsg] = useState("");
 
   // start function to get student data to updata on clicking
   const handleStudentClick = (e, StudentDetails) => {
@@ -54,8 +57,6 @@ export default function Students() {
   };
   // Function to format the date as YYYY/MM/DD
   const formatDate = (inputDate) => {
-    console.log(inputDate);
-
     const date = new Date(inputDate);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -64,15 +65,19 @@ export default function Students() {
   };
   // function to execute an action
   const handleSubmit = async (e) => {
-    const formattedDate = formatDate(formData.birthDay);
+    const formattedDate = formatDate(formData?.birthDay);
     const dataToSubmit = { ...formData, birthDay: formattedDate };
     try {
       e.preventDefault();
       if (selectedStudent) {
         await editStudent(selectedStudent._id, dataToSubmit);
+        setactionmsg("Updating Student sucess");
+        setpopUpmsg(true);
         fetchStudents();
       } else {
         await addStudent(dataToSubmit);
+        setactionmsg("Adding Student sucess");
+        setpopUpmsg(true);
         fetchStudents();
       }
 
@@ -83,7 +88,6 @@ export default function Students() {
       console.log(error);
     }
   };
- 
 
   // Confirm delete Student
   const confirmDelete = (e, StudentId) => {
@@ -99,6 +103,8 @@ export default function Students() {
         if (result.isConfirmed) {
           // Implement Delete Student function as needed
           deleteStudent(StudentId);
+          setactionmsg("Deleting Student sucess");
+          setpopUpmsg(true);
           fetchStudents();
         }
       });
@@ -110,6 +116,7 @@ export default function Students() {
 
   return (
     <section className="">
+      {popUpmsg && <PopUpMassage children={actionmsg} />}
       <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
         <div className="mx-auto ">
           <h1 className="text-textColor text-xl font-medium py-2">Students</h1>
@@ -117,7 +124,7 @@ export default function Students() {
             <div className="overflow-x-auto">
               {!AllStudents.length == 0 ? (
                 <table className="min-w-full bg-white border border-gray-300">
-                  <thead className="bg-gray-200 ">
+                  <thead className="bg-gray-200 text-[12px]">
                     <tr>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                         name
@@ -126,13 +133,19 @@ export default function Students() {
                         Age
                       </th>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
-                        Class Num
+                        Class
                       </th>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                         Joining Date
                       </th>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                         Nationality
+                      </th>
+                      <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
+                        Teacher
+                      </th>
+                      <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
+                        Address
                       </th>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                         parent Number
@@ -162,10 +175,20 @@ export default function Students() {
                           {student.ClassNum}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
-                          {student.birthDay}
+                          {student.birthDay
+                            ? new Date(student.birthDay)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                           {student.nationality}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
+                          {student.TeacherName}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
+                          {student.address}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                           {student.phone}
@@ -336,7 +359,13 @@ export default function Students() {
                 <div>
                   <input
                     className="Dashboardinput"
-                    value={formData.birthDay}
+                    value={
+                      formData.birthDay ? (
+                        new Date(formData.birthDay).toISOString().split("T")[0]
+                      ) : (
+                        <span>N/A</span>
+                      )
+                    }
                     type="date"
                     required
                     min={0}
@@ -365,5 +394,3 @@ export default function Students() {
     </section>
   );
 }
-
-

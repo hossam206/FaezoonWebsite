@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const VerifyLogin = async (UserData) => {
+  // Log UserData before sending
   try {
     const response = await axios.post(
       "http://localhost:3000/api/v1/login",
@@ -11,10 +12,12 @@ export const VerifyLogin = async (UserData) => {
         },
       }
     );
-    console.log("Response:", response);
-    return response.data; // Return only the response data
+
+    return response.data;
   } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
-    throw error; // Rethrow error to handle it in the calling function
+    // console.error("Error message:", error.message); // Log the error message
+ 
+
+    // throw error; // Rethrow the error to handle it in the calling function
   }
 };

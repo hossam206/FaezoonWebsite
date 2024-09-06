@@ -35,9 +35,6 @@ function Navbar({ ButtonStatius }) {
             {ButtonStatius && (
               <div className="md:flex md:items-center md:gap-12">
                 <div className="flex items-center gap-2">
-                  <Buttons action={() => handleLoginForm("User")}>
-                    Register
-                  </Buttons>
                   <Buttons
                     varient="primary"
                     action={() => handleLoginForm("admin")}

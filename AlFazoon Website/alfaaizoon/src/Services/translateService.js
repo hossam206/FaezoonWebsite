@@ -21,24 +21,27 @@ export const translateText = async (text, targetLanguage) => {
     return translatedText;
   } catch (error) {
     // console.error("Error translating text:", error);
-   
+
     return "";
   }
 };
 
 // format way to show
 export const formatDataForDisplay = (data, type) => {
-  // Format each object with a label: value style and separate with new lines
-  if (data.length === 0) {
+  // Filter out objects where the value is empty
+  const filteredData = data.filter((item) => item.value.trim() !== "");
+
+  // If no data remains after filtering, return "No data today"
+  if (filteredData.length === 0) {
     return "No data today";
   }
-  return data
-    .map((item) => {
-      // Extract values from each object
-      const values = Object.values(item);
-      // Join values with a space or other delimiter if needed
-        return values.join(" :::: ");
-    })
-    .filter((line) => line.trim() !== '') // Remove any empty lines
-    .join('\n '); // Separate different objects with new lines
+
+  // Format each object with a label: value style and separate with new lines
+  return filteredData
+    .map((item) => `${item.label} :::: ${item.value}`)
+    .join("\n "); // Separate different objects with new lines
 };
+
+
+
+ 

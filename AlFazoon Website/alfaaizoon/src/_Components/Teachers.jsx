@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { BiSolidHide } from "react-icons/bi";
+import { BiShow } from "react-icons/bi";
 import swal from "sweetalert2";
 import {
   addNewTeacher,
@@ -6,6 +8,7 @@ import {
   updateTeacher,
   GetAllTeachers,
 } from "../Services/TeacherServices";
+import PopUpMassage from "./PopUpMassage";
 const initialContent = {
   firstName: "",
   middleName: "",
@@ -24,7 +27,9 @@ export default function Teachers() {
   const [AllTeachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialContent);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
-
+  // show popUpmsg while doing any action
+  const [popUpmsg, setpopUpmsg] = useState(false);
+  const [actionmsg, setactionmsg] = useState("");
   // Function to fill data form to update
   const handleTeacherClick = (e, teacherDetails) => {
     e.preventDefault();
@@ -52,10 +57,13 @@ export default function Teachers() {
       if (selectedTeacher) {
         // Implement updateTeacher function as needed
         await updateTeacher(selectedTeacher._id, formData);
+        setactionmsg("Updating teacher sucess");
+        setpopUpmsg(true);
         fetchTeachers();
       } else {
         await addNewTeacher(formData);
-        console.log(formData);
+        setactionmsg("Adding New teacher sucess");
+        setpopUpmsg(true);
         fetchTeachers();
       }
       // Empty form and reset state
@@ -81,6 +89,8 @@ export default function Teachers() {
         if (result.isConfirmed) {
           // Implement DeleteTeacher function as needed
           DeleteTeacher(teacherId);
+          setactionmsg("Deleting teacher sucess");
+          setpopUpmsg(true);
           fetchTeachers();
         }
       });
@@ -95,12 +105,18 @@ export default function Teachers() {
       console.error("Failed to fetch teachers:", error);
     }
   };
+  // handle show or hide password
+  const [passwordstatus, showpassword] = useState(false);
+  const handlepassword = () => {
+    showpassword(!passwordstatus);
+  };
   useEffect(() => {
     fetchTeachers();
   }, []);
 
   return (
     <section className="">
+      {popUpmsg && <PopUpMassage children={actionmsg} />}
       <div className="mx-auto max-w-screen-xl px-4  sm:px-6 lg:px-8">
         <div className="mx-auto ">
           <h1 className="text-textColor text-xl font-medium py-2">Teachers</h1>
@@ -109,9 +125,9 @@ export default function Teachers() {
               <div className="rounded-lg border border-gray-200">
                 <div className="overflow-x-auto rounded-t-lg">
                   <div className="overflow-x-auto">
-                    {!AllTeachers.length == 0 ? (
+                    {!AllTeachers?.length == 0 ? (
                       <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
-                        <thead className="text-left ">
+                        <thead className="text-left text-[14px]">
                           <tr>
                             <th className="whitespace-nowrap  px-4 py-2 font-bold text-center text-textColor">
                               Name
@@ -125,6 +141,9 @@ export default function Teachers() {
                             </th>
                             <th className="whitespace-nowrap px-4 py-2 font-bold text-center text-textColor">
                               Mobile
+                            </th>
+                            <th className="whitespace-nowrap px-4 py-2 font-bold text-center text-textColor">
+                              Date of Joining
                             </th>
                             <th className="whitespace-nowrap px-4 py-2 font-bold text-center text-textColor">
                               UserName
@@ -146,16 +165,23 @@ export default function Teachers() {
                             <tr className="odd:bg-gray-50" key={teacher._id}>
                               <td className="whitespace-nowrap px-4 py-2 font-medium  text-center  text-gray-900">
                                 {teacher.firstName} {teacher.middleName}{" "}
-                                {teacher.firstName}
+                                {teacher.lastName}
                               </td>
                               <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
-                                {teacher.teacherID}
+                                {teacher.classID}
                               </td>
                               <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                                 {teacher.nationality}
                               </td>
                               <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                                 {teacher.phone}
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
+                                {teacher.birthDay
+                                  ? new Date(teacher.birthDay)
+                                      .toISOString()
+                                      .split("T")[0]
+                                  : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                                 {teacher.userName}
@@ -267,7 +293,13 @@ export default function Teachers() {
                     required
                     name="birthDay"
                     onChange={handleChange}
-                    value={formData.birthDay}
+                    value={
+                      formData.birthDay
+                        ? new Date(formData.birthDay)
+                            .toISOString()
+                            .split("T")[0]
+                        : "N/A"
+                    }
                   />
                 </div>
 
@@ -329,16 +361,24 @@ export default function Teachers() {
                     value={formData.userName}
                   />
                 </div>
-                <div>
+                <div className="relative">
                   <input
                     className="Dashboardinput"
                     placeholder="password"
-                    type="password"
+                    type={`${passwordstatus ? "text" : "password"}`}
                     required
                     name="password"
                     onChange={handleChange}
                     value={formData.password}
                   />
+
+                  <span className="absolute inset-y-0 end-0 text-xl grid place-content-center px-4 text-gray-400 cursor-pointer duration-200  hover:text-black">
+                    {!passwordstatus ? (
+                      <BiSolidHide onClick={handlepassword} />
+                    ) : (
+                      <BiShow onClick={handlepassword} />
+                    )}
+                  </span>
                 </div>
               </div>
 

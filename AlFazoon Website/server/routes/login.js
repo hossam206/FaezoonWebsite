@@ -1,10 +1,8 @@
-import express from 'express'
-import { login } from './../controllers/teachers.js'
+import express from "express";
+import { login } from "./../controllers/login.js";
 
-const loginRoute = express.Router()
+const loginRoute = express.Router();
 
+loginRoute.post("/", login);
 
-
-loginRoute.post('/login', login)
-
-export default loginRoute
+export default loginRoute;

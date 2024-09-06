@@ -3,6 +3,8 @@ import {
   formatDataForDisplay,
   translateText,
 } from "../Services/translateService";
+// import icons
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 
 import Overlay from "./Overlay";
 import Navbar from "./Navbar";
@@ -67,7 +69,9 @@ function UserPage() {
       );
     };
     // set translated inputs into state
-    setquranData(await processAndTranslateInputs(quranInputs));
+    setquranData(
+      await processAndTranslateInputs(quranInputs ? quranInputs : "")
+    );
     setTMoragaaData(await processAndTranslateInputs(MorgaaInputs));
     sethomeworkData(await processAndTranslateInputs(HomeworkInputs));
     setIslamicStudies(await processAndTranslateInputs(IslamicStudies));
@@ -80,35 +84,29 @@ function UserPage() {
   // hadle day of today
   const today = new Date();
   const TodayDate = today.toISOString().split("T")[0];
-
-  // function to expand sections
-  // const [TargetSection, setTargetSection] = useState(1);
-  // const ExpandTargetSection = (id) => {
-  //   setTargetSection(TargetSection == id ? '' : id);
-  // };
   // function to display data in textarea
   const StudentDetailsData = `Student Data:\n${formatDataForDisplay(
-    Student_Details,
+    Student_Details || "",
     "Student Data"
   )}`;
   const formattedQuranData = `Quran Karim:\n${formatDataForDisplay(
-    quranDatatranslated,
+    quranDatatranslated || "",
     "quran"
   )}`;
   const formattedMoragaaData = `Moragaa Quran:\n${formatDataForDisplay(
-    MoragaaDatatranslated,
+    MoragaaDatatranslated || "",
     "moragaa"
   )}`;
   const formattedHomeworkData = `Homework:\n${formatDataForDisplay(
-    homeworkDatatranslated,
+    homeworkDatatranslated || "",
     "Homework"
   )}`;
   const formattedIslamicStudiesData = `Islamic Studies:\n${formatDataForDisplay(
-    IslamicStudiestranslated,
+    IslamicStudiestranslated || "",
     "Islamic Studies"
   )}`;
   const TeacherNotesData = `Teacher Notes:\n${formatDataForDisplay(
-    Teacher_notes,
+    Teacher_notes || "",
     "Teacher Notes"
   )}`;
 
@@ -150,9 +148,6 @@ function UserPage() {
       initialContent
     );
 
-    // Log the generated WhatsApp URL
-    console.log(sendToWhatsapp);
-
     // Redirect to WhatsApp using the generated link if valid
     if (sendToWhatsapp) {
       window.location.href = sendToWhatsapp;
@@ -173,6 +168,11 @@ function UserPage() {
         if (input) input.value = "";
       })
     );
+  };
+  // collabse each section as want
+  const [collabse, setcollabse] = useState("");
+  const collabsesecion = (index) => {
+    setcollabse(collabse == index ? null : index);
   };
 
   return (
@@ -332,16 +332,20 @@ function UserPage() {
                 <div className="flex flex-row items-center justify-between py-3">
                   <span
                     className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "
-                    // onClick={() => ExpandTargetSection(1)}
+                    onClick={() => collabsesecion(1)}
                   >
-                    {/* {TargetSection == 1 ? <IoIosArrowUp /> : <IoIosArrowDown />} */}
+                    {collabse == 1 ? <IoIosArrowUp /> : <IoIosArrowDown />}
                   </span>
                   <h1 className="text-right text-textColor font-semibold text-xl underline">
                     القرأن الكريم
                   </h1>
                 </div>
 
-                <div className="flex md:flex-row-reverse md:flex-wrap lg:flex-nowrap flex-col md:items-center items-end justify-start gap-2 ">
+                <div
+                  className={` md:flex-row-reverse md:flex-wrap lg:flex-nowrap flex-col md:items-center items-end justify-start gap-2 ${
+                    collabse == 1 ? "flex" : "hidden"
+                  }`}
+                >
                   <div className="flex flex-col items-end justify-end w-full md:w-1/3 py-2">
                     <label className="font-bold text-textColor py-1">
                       تسميع
@@ -431,16 +435,20 @@ function UserPage() {
                 <div className="flex flex-row items-center justify-between py-3">
                   <span
                     className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "
-                    // onClick={() => ExpandTargetSection(2)}
+                    onClick={() => collabsesecion(2)}
                   >
-                    {/* {TargetSection == 2 ? <IoIosArrowUp /> : <IoIosArrowDown />} */}
+                    {collabse == 2 ? <IoIosArrowUp /> : <IoIosArrowDown />}
                   </span>
                   <h1 className="text-right text-textColor font-semibold text-xl underline">
                     مراجعة القرأن
                   </h1>
                 </div>
 
-                <div className="flex md:flex-row-reverse md:flex-wrap lg:flex-nowrap flex-col md:items-center items-end justify-start gap-2 ">
+                <div
+                  className={` md:flex-row-reverse md:flex-wrap lg:flex-nowrap flex-col md:items-center items-end justify-start gap-2 ${
+                    collabse == 2 ? "flex" : "hidden"
+                  }`}
+                >
                   <div className="flex flex-col items-end justify-end w-full md:w-1/3 py-2">
                     <label className="font-bold text-textColor py-1">
                       قريب
@@ -527,15 +535,22 @@ function UserPage() {
               {/* start homework section */}
               <div className="p-4 border border-dotted border-slate-500 grid-flow-row rounded-lg my-4 space-y-2  ">
                 <div className="flex flex-row items-center justify-between py-3">
-                  <span className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 ">
-                    {/* {TargetSection == 3 ? <IoIosArrowUp /> : <IoIosArrowDown />} */}
+                  <span
+                    className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "
+                    onClick={() => collabsesecion(3)}
+                  >
+                    {collabse == 3 ? <IoIosArrowUp /> : <IoIosArrowDown />}
                   </span>
                   <h1 className="text-right text-textColor font-semibold text-xl underline">
                     الواجب
                   </h1>
                 </div>
 
-                <div className="flex md:flex-row-reverse md:flex-wrap lg:flex-nowrap flex-col md:items-center items-end justify-start gap-2 ">
+                <div
+                  className={`flex md:flex-row-reverse md:flex-wrap lg:flex-nowrap flex-col md:items-center items-end justify-start gap-2 ${
+                    collabse == 3 ? "flex" : "hidden"
+                  }`}
+                >
                   <div className="flex flex-col items-end justify-end w-full md:w-1/3 py-2">
                     <label className="font-bold text-textColor py-1">
                       الواجب سماع
@@ -619,13 +634,22 @@ function UserPage() {
               {/* start islamic studies */}
               <div className="p-4 border border-dotted border-slate-500 grid-flow-row rounded-lg my-4 space-y-2">
                 <div className="flex flex-row   items-center justify-between py-3">
-                  <span className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "></span>
+                  <span
+                    className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "
+                    onClick={() => collabsesecion(4)}
+                  >
+                    {collabse == 4 ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                  </span>
                   <h1 className="text-right text-textColor font-semibold text-xl underline">
                     المواد الشرعيه
                   </h1>
                 </div>
 
-                <div className="flex md:flex-row-reverse    md:flex-wrap flex-col md:items-center items-end justify-start gap-2 ">
+                <div
+                  className={`  md:flex-row-reverse    md:flex-wrap flex-col md:items-center items-end justify-start gap-2 ${
+                    collabse == 4 ? "flex" : "hidden"
+                  }`}
+                >
                   <div className="flex flex-col items-end justify-end w-full md:w-3/12 py-2 ">
                     <label className="font-bold text-textColor py-1">
                       اللغة العربيه
@@ -826,34 +850,41 @@ function UserPage() {
               {/* start teacher feedback */}
               <div className="p-4 border border-dotted border-slate-500 grid-flow-row rounded-lg my-4 space-y-2">
                 <div className="flex flex-row items-center justify-between py-3">
-                  <span className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "></span>
+                  <span
+                    className="w-auto h-full p-1 rounded-full cursor-pointer text-xl font-medium bg-PrimaryButtonColor text-white hover:bg-white hover:text-slate-900 transition-all duration-200 "
+                    onClick={() => collabsesecion(5)}
+                  >
+                    {collabse == 5 ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                  </span>
                   <h1 className="text-right text-textColor font-semibold text-xl underline">
                     ملاحظات المعلم
                   </h1>
                 </div>
 
-                <table className="w-full border-collapse text-right bg-[#ECFBF9] ">
-                  <thead>
-                    <tr>
-                      <th className="border border-gray-300 p-2 text-center text-textColor">
-                        ملاحظات
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-300 p-2">
-                        <input
-                          type="text"
-                          className="inputText text-xl"
-                          placeholder="أدخل القيمة هنا"
-                          data-label="ملاحظات المعلم اليوم"
-                          ref={(el) => (TeacherNotes.current[0] = el)}
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div className={`${collabse == 5 ? "flex" : "hidden"}`}>
+                  <table className="w-full border-collapse text-right bg-[#ECFBF9] ">
+                    <thead>
+                      <tr>
+                        <th className="border border-gray-300 p-2 text-center text-textColor">
+                          ملاحظات
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border border-gray-300 p-2">
+                          <input
+                            type="text"
+                            className="inputText text-xl"
+                            placeholder="أدخل القيمة هنا"
+                            data-label="ملاحظات المعلم اليوم"
+                            ref={(el) => (TeacherNotes.current[0] = el)}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
               {/* end teacher feedback */}
               <div className="grid grid-cols-1 my-2">

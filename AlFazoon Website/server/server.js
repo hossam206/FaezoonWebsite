@@ -10,7 +10,7 @@ dotenv.config();
 
 const port = process.env.PORT
 const host = process.env.HOST
-const ORIGIN=process.env.ORIGIN
+const ORIGIN = process.env.ORIGIN
 const dbURI = process.env.DB_URI
 
 
@@ -23,7 +23,7 @@ const app = express();
 import cors from "cors";
 app.use(
   cors({
-    origin:ORIGIN,
+    origin: ORIGIN,
   })
 );
 await run(dbURI);
@@ -40,5 +40,5 @@ app.use("/api", router);
 
 app.listen(port, host, () => {
   console.log(`Server running ON Host ${host} Port ${port}...\n`);
-  
+
 });

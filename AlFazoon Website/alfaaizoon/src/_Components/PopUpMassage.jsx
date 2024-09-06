@@ -7,7 +7,7 @@ function PopUpMassage({ children }) {
     showPop_up_Massage(true);
     setTimeout(() => {
       showPop_up_Massage(false);
-    }, 1000);
+    }, 2000);
   }, [children]);
   return (
     <div
