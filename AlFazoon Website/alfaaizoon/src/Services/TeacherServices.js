@@ -1,12 +1,11 @@
 import axios from "axios";
 //import {jwt} from 'jwt-decode'
 
-const Token = JSON.parse(localStorage?.getItem("Maintoken"));
 // const Token = localStorage.getItem("Maintoken");
-
 
 export const GetAllTeachers = async () => {
   try {
+    const Token = localStorage.getItem("Maintoken");
     const response = await axios.post(
       "http://localhost:3000/api/v1/teachers",
       {},
@@ -26,6 +25,7 @@ export const GetAllTeachers = async () => {
 
 // start Function Add New Teacher Data
 export const addNewTeacher = async (postData) => {
+  const Token = localStorage.getItem("Maintoken");
   try {
     const response = await axios.post(
       "http://localhost:3000/api/v1/teacher",
@@ -37,16 +37,20 @@ export const addNewTeacher = async (postData) => {
         },
       }
     );
-    console.log("Response:", response.data);
-    return response.data; // Return the response data if needed
+    return { success: true, data: response.data }; // Return success
   } catch (error) {
-    // console.error("Error:", error.data);
-    // throw error; // Rethrow error to handle it in the calling function
+    // console.error("Error:", error.response?.data || error.message);
+    return {
+      success: false,
+
+      message: error.response?.data?.message || "Failed to add teacher",
+    }; // Return error
   }
 };
 
 // start Function Edit Teacher
 export const updateTeacher = async (TeacherId, UpdatedData) => {
+  const Token = localStorage.getItem("Maintoken");
   try {
     const response = await axios.put(
       `http://localhost:3000/api/v1/teacher/${TeacherId}`,
@@ -66,35 +70,34 @@ export const updateTeacher = async (TeacherId, UpdatedData) => {
 };
 // Function Delete Teacher
 export const DeleteTeacher = async (TeacherId) => {
+
+
   try {
     let Token = localStorage.getItem("Maintoken");
-    Token = Token.slice(1, -1)
-    //console.log(`Bearer ${Token}`) // Ensure token is retrieved from localStorage
-    //Log token for debugging
+    
 
     const response = await axios.delete(
       `http://localhost:3000/api/v1/teacher/d/${TeacherId}`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`
+          Authorization: `Bearer ${Token}`,
         },
       }
     );
     // console.log("Response data:", response.data); // Log response data
     return response.data;
-
   } catch (error) {
     console.error(
       "Failed to delete teacher:",
-      error.response ? error.response.data : error
+      // error.response ? error.response.data : error
     );
     throw error; // Optionally rethrow the error to handle it elsewhere
   }
 };
-
 // start get all Students Count
 export const getTeachersCount = async () => {
+  const Token = localStorage.getItem("Maintoken");
   try {
     const response = await axios.post(
       "http://localhost:3000/api/v1/teachers/Count",

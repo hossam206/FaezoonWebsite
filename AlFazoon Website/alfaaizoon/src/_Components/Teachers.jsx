@@ -9,6 +9,7 @@ import {
   GetAllTeachers,
 } from "../Services/TeacherServices";
 import PopUpMassage from "./PopUpMassage";
+
 const initialContent = {
   firstName: "",
   middleName: "",
@@ -22,14 +23,15 @@ const initialContent = {
   userName: "",
   password: "",
 };
+
 export default function Teachers() {
   const formRef = useRef(null);
   const [AllTeachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialContent);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
-  // show popUpmsg while doing any action
   const [popUpmsg, setpopUpmsg] = useState(false);
   const [actionmsg, setactionmsg] = useState("");
+
   // Function to fill data form to update
   const handleTeacherClick = (e, teacherDetails) => {
     e.preventDefault();
@@ -53,25 +55,52 @@ export default function Teachers() {
   // Function to submit form data
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (selectedTeacher) {
-        // Implement updateTeacher function as needed
+        // Update teacher logic
         await updateTeacher(selectedTeacher._id, formData);
-        setactionmsg("Updating teacher sucess");
-        setpopUpmsg(true);
-        fetchTeachers();
+        setactionmsg("Updating teacher success");
+
+        // Reset form and clear selected teacher after updating
+        formRef.current.reset();
+        setFormData(initialContent);
+        setSelectedTeacher(null); // Clear selected teacher after update
       } else {
-        await addNewTeacher(formData);
-        setactionmsg("Adding New teacher sucess");
-        setpopUpmsg(true);
-        fetchTeachers();
+        // Add new teacher logic
+        const response = await addNewTeacher(formData);
+        console.log("not_select");
+
+        if (response.success) {
+          setpopUpmsg(true);
+          setactionmsg("Adding new teacher success");
+          console.log("success");
+
+          // Reset form only if adding the new teacher is successful
+          formRef.current.reset();
+          setFormData(initialContent);
+        } else {
+          // If there was an error, e.g., duplicate mobile number
+          setpopUpmsg(true);
+          setactionmsg("You should enter a different number");
+          console.log("fails");
+        }
       }
-      // Empty form and reset state
-      formRef.current.reset();
-      setFormData(initialContent);
-      setSelectedTeacher(null);
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("Error during form submission:", error);
+      setactionmsg("An error occurred. Please try again.");
+    }
+    fetchTeachers();
+  };
+
+  // Load all teachers
+  const fetchTeachers = async () => {
+    try {
+      const teachers = await GetAllTeachers();
+      // console.log("Fetched Teachers: ", teachers); // Log before setting state
+      setTeachers(teachers); // Update state with the latest teachers
+    } catch (error) {
+      console.error("Failed to fetch teachers:", error);
     }
   };
 
@@ -80,40 +109,35 @@ export default function Teachers() {
     e.preventDefault();
     swal
       .fire({
-        title: "Are You Sure You Want To Delete?",
+        title: "Are you sure you want to delete?",
         showCloseButton: true,
         showCancelButton: true,
         confirmButtonText: "Yes, delete it!",
       })
-      .then((result) => {
+      .then(async (result) => {
         if (result.isConfirmed) {
-          // Implement DeleteTeacher function as needed
-          DeleteTeacher(teacherId);
-          setactionmsg("Deleting teacher sucess");
-          setpopUpmsg(true);
-          fetchTeachers();
+          try {
+            await DeleteTeacher(teacherId); // Await the delete action
+            setactionmsg("Deleting Teacher success");
+            setpopUpmsg(true);
+            fetchTeachers();
+            // Fetch updated list after deletion
+          } catch (error) {
+            console.error("Error deleting student:", error);
+          }
         }
       });
   };
 
-  // Load all teachers
-  const fetchTeachers = async () => {
-    try {
-      const teachers = await GetAllTeachers(); // Ensure GetAllTeachers returns a promise
-      setTeachers(teachers);
-    } catch (error) {
-      console.error("Failed to fetch teachers:", error);
-    }
-  };
   // handle show or hide password
   const [passwordstatus, showpassword] = useState(false);
   const handlepassword = () => {
     showpassword(!passwordstatus);
   };
-  useEffect(() => {
-    fetchTeachers();
-  }, []);
 
+  useEffect(() => {
+    fetchTeachers(); // Initial fetch on component mount
+  }, []);
   return (
     <section className="">
       {popUpmsg && <PopUpMassage children={actionmsg} />}
@@ -126,7 +150,7 @@ export default function Teachers() {
                 <div className="overflow-x-auto rounded-t-lg">
                   <div className="overflow-x-auto">
                     {!AllTeachers?.length == 0 ? (
-                      <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                      <table className="min-w-full overflow-scroll divide-y-2 divide-gray-200 bg-white text-sm">
                         <thead className="text-left text-[14px]">
                           <tr>
                             <th className="whitespace-nowrap  px-4 py-2 font-bold text-center text-textColor">
@@ -152,9 +176,6 @@ export default function Teachers() {
                               password
                             </th>
                             <th className="whitespace-nowrap px-4 py-2 font-bold text-center text-textColor">
-                              Update
-                            </th>
-                            <th className="whitespace-nowrap px-4 py-2 font-bold text-center text-textColor">
                               Delete
                             </th>
                           </tr>
@@ -162,8 +183,14 @@ export default function Teachers() {
 
                         <tbody className="divide-y divide-gray-200">
                           {AllTeachers?.map((teacher) => (
-                            <tr className="odd:bg-gray-50" key={teacher._id}>
-                              <td className="whitespace-nowrap px-4 py-2 font-medium  text-center  text-gray-900">
+                            <tr
+                              className="odd:bg-gray-50 hover:odd:bg-400 cursor-pointer"
+                              key={teacher._id}
+                            >
+                              <td
+                                className="whitespace-nowrap px-4 py-2 font-medium  text-center  text-gray-900 hover:underline cursor-pointer hover:text-red-500"
+                                onClick={(e) => handleTeacherClick(e, teacher)}
+                              >
                                 {teacher.firstName} {teacher.middleName}{" "}
                                 {teacher.lastName}
                               </td>
@@ -189,26 +216,20 @@ export default function Teachers() {
                               <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                                 {teacher.password}
                               </td>
-                              <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
+                              <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                                 <a
                                   href="#"
                                   onClick={(e) =>
-                                    handleTeacherClick(e, teacher)
+                                    confirmDelete(e, teacher?._id)
                                   }
-                                  className="inline-block w-full rounded hover:shadow-2xl text-xs  bg-sky-600  hover:bg-sky-500  px-4 py-2 font-medium text-white sm:w-auto"
+                                  className={
+                                    "inline-block w-full rounded-md   text-[14px] px-2 py-1 font-medium text-white sm:w-auto bg-red-600 hover:bg-red-500 outline-none"
+                                  }
                                 >
-                                  Update
-                                </a>
-                              </td>
-                              <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                                <a
-                                  onClick={(e) => confirmDelete(e, teacher._id)}
-                                  href="#"
-                                  className="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-400"
-                                >
+                                  {" "}
                                   Delete
                                 </a>
-                              </td>
+                              </th>
                             </tr>
                           ))}
                         </tbody>
@@ -385,13 +406,18 @@ export default function Teachers() {
               <div className="mt-4 flex md:flex-row flex-col items-center gap-5 py-3 ">
                 <button
                   type="submit"
-                  className={`inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto ${
-                    selectedTeacher
-                      ? "bg-sky-600 hover:bg-sky-400"
-                      : "bg-green-600 hover:bg-green-500"
-                  }`}
+                  className={
+                    "inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto bg-green-600 hover:bg-green-500 outline-none"
+                  }
                 >
-                  {selectedTeacher ? "Update" : "     Add Teacher"}
+                  Add New Student
+                </button>
+                <button
+                  className={
+                    "inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto bg-sky-600 hover:bg-sky-400 outline-none"
+                  }
+                >
+                  Update
                 </button>
               </div>
             </form>

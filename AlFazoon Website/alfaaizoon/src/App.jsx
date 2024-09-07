@@ -1,22 +1,23 @@
-import {
-  BrowserRouter,
-  createBrowserRouter,
-  json,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Header from "./_Components/Header";
 import Dashboard from "./_Components/Dashboard";
 import UserPage from "./_Components/UserPage";
+
+import { useEffect, useState } from "react";
 import NotFind from "./_Components/NotFind";
-import { useEffect } from "react";
+import Protect_Routes from "./ProtectedRoutes/Protect_Routes";
+import ProtectUser from "./ProtectedRoutes/ProtectUser";
 
 function App() {
-  const userRole = JSON.parse(localStorage.getItem("token"));
-
-
-
-  //const decodedToken =  jwtDecode(findUser.token);
-  //console.log(decodedToken)
+  // const Role = async () => {
+  //   const token = await JSON.parse(localStorage.getItem("token")); // "token" is the key used when storing
+  //   setUserRole(await token?.role);
+  // };
+  // // const [UserRole, setUserRole] = useState(null);
+  // useEffect(() => {
+  //   Role();
+  // }, []);
+  // const [UserRole, setUserRole] = useState(null);
 
   const router = createBrowserRouter([
     {
@@ -26,15 +27,30 @@ function App() {
 
     {
       path: "Dashboard",
-      element: userRole?.role === "admin" ? <Dashboard /> : <NotFind />,
+      element: (
+        <>
+          <Protect_Routes>
+            <Dashboard />
+          </Protect_Routes>
+        </>
+      ),
     },
 
     {
       path: "UserPage",
-      element: userRole?.role === "user" ? <UserPage /> : <NotFind />,
+      element: (
+        <>
+          <ProtectUser>
+            <UserPage />
+          </ProtectUser>
+        </>
+      ),
+    },
+    {
+      path: "not-found",
+      element: <NotFind />,
     },
   ]);
-
   return <RouterProvider router={router} />;
 }
 

@@ -3,48 +3,49 @@ import React, { useEffect, useState } from "react";
 import { BiSolidHide } from "react-icons/bi";
 import { BiShow } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
-import { useNavigate } from "react-router";
-import { jwtDecode } from "jwt-decode";
 import useLogin from "../Services/LoginService";
+import Overlay from "./Overlay";
 
 const LoginInfo = {
   userName: "",
   password: "",
 };
-function LoginForm({ hideform, user }) {
-  const [formData, setFormData] = useState(LoginInfo);
-  //const [lstrole, setRole] = useState('');
-  // const [lstrole, setRole] = useState(null);
-  const navigate = useNavigate();
-  // handle show or hide password
+function LoginForm({ hideform }) {
+  const [errormsg, setErrormsg] = useState(false);
+  const { VerifyLogin } = useLogin();
   const [passwordstatus, showpassword] = useState(false);
+  const [formData, setFormData] = useState(LoginInfo);
+  const [overlay, showOverlay] = useState(false);
+  // handle show or hide password
   const handlepassword = () => {
     showpassword(!passwordstatus);
   };
   // verify usertype and password & id
-  const [errormsg, setErrormsg] = useState(false);
-
-  const { VerifyLogin } = useLogin();
-
   const handleChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
+  // Login Func
   const Login = async (e) => {
     e.preventDefault();
-
     try {
       await VerifyLogin(formData);
+
+      showOverlay(true);
+      setTimeout(() => {
+        showOverlay(false);
+      }, 1000);
     } catch (error) {
-      console.error("Failed to fetch Students:", error);
-      setErrormsg(true);
+      setErrormsg(true); // Show error message
+      console.error("Login failed:", error);
+      showOverlay(false);
     }
   };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-slate-900/60 z-50">
+      {overlay && <Overlay title={"Log In..."} />}
       <div className="container absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-bgColor rounded-lg mx-auto w-full max-w-[500px] px-4 py-16 sm:px-6 lg:px-8">
         <div
           className="absolute -top-4 -right-2 flex justify-end items-start text-2xl cursor-pointer hover:text-white hover:bg-red-500  bg-slate-100 rounded-full p-1 duration-200 "

@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import PopUpMassage from "./PopUpMassage";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import swal from "sweetalert2";
 import {
   addStudent,
@@ -7,6 +9,7 @@ import {
   getStudents,
   deleteStudent,
 } from "../Services/StudentService";
+
 const initialContent = {
   firstName: "",
   middleName: "",
@@ -26,11 +29,10 @@ export default function Students() {
   const [formData, setFormData] = useState(initialContent);
   const [selectedStudent, setselectedStudent] = useState("");
   const [AllStudents, setStudents] = useState([]);
-  // show popUpmsg while doing any action
   const [popUpmsg, setpopUpmsg] = useState(false);
   const [actionmsg, setactionmsg] = useState("");
 
-  // start function to get student data to updata on clicking
+  // Function to get student data for updating
   const handleStudentClick = (e, StudentDetails) => {
     e.preventDefault();
     setselectedStudent(StudentDetails);
@@ -40,21 +42,27 @@ export default function Students() {
     });
   };
 
-  // Load all teachers
+  // Function to load all students
   const fetchStudents = async () => {
     try {
-      const Students = await getStudents(); // Ensure GetAllTeachers returns a promise
+      const Students = await getStudents();
       setStudents(Students);
     } catch (error) {
-      console.error("Failed to fetch Students:", error);
+      console.error("Failed to fetch students:", error);
     }
   };
-  // start function collect data from form
+
+  // Function to collect form data
   const handleChange = (e) => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (e?.target) {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
+    } else {
+      // Handle phone input
+      setFormData({ ...formData, whatsapp: e });
+    }
   };
+
   // Function to format the date as YYYY/MM/DD
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -63,55 +71,66 @@ export default function Students() {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}/${month}/${day}`;
   };
-  // function to execute an action
+
+  // Function to execute submit action
   const handleSubmit = async (e) => {
-    const formattedDate = formatDate(formData?.birthDay);
-    const dataToSubmit = { ...formData, birthDay: formattedDate };
+    e.preventDefault();
     try {
-      e.preventDefault();
       if (selectedStudent) {
-        await editStudent(selectedStudent._id, dataToSubmit);
-        setactionmsg("Updating Student sucess");
-        setpopUpmsg(true);
-        fetchStudents();
+        await editStudent(selectedStudent._id, formData);
+        setactionmsg("Updating teacher success");
+        FormRef.current.reset();
+        setFormData(initialContent);
+        setselectedStudent(null);
       } else {
-        await addStudent(dataToSubmit);
-        setactionmsg("Adding Student sucess");
-        setpopUpmsg(true);
-        fetchStudents();
+        const response = await addStudent(formData);
+
+        if (response.success) {
+          setactionmsg("Adding new teacher success");
+          FormRef.current.reset();
+          setFormData(initialContent);
+          setselectedStudent(null);
+        } else {
+          setactionmsg("You should enter a different number");
+        }
       }
 
-      FormRef.current.reset();
-      setFormData(initialContent);
-      setselectedStudent(null);
+      setpopUpmsg(true);
+      fetchStudents(); // Fetch the updated list of teachers
+
+      // Empty form and reset state
     } catch (error) {
-      console.log(error);
+      console.error("Submission error:", error);
     }
   };
 
-  // Confirm delete Student
+  // Function to confirm delete student
   const confirmDelete = (e, StudentId) => {
     e.preventDefault();
     swal
       .fire({
-        title: "Are You Sure You Want To Delete?",
+        title: "Are you sure you want to delete?",
         showCloseButton: true,
         showCancelButton: true,
         confirmButtonText: "Yes, delete it!",
       })
-      .then((result) => {
+      .then(async (result) => {
         if (result.isConfirmed) {
-          // Implement Delete Student function as needed
-          deleteStudent(StudentId);
-          setactionmsg("Deleting Student sucess");
-          setpopUpmsg(true);
-          fetchStudents();
+          try {
+            await deleteStudent(StudentId); // Await the delete action
+            setactionmsg("Deleting student success");
+            setpopUpmsg(true);
+            fetchStudents();
+            // Fetch updated list after deletion
+          } catch (error) {
+            console.error("Error deleting student:", error);
+          }
         }
       });
   };
 
   useEffect(() => {
-    fetchStudents();
+    fetchStudents(); // Load students on component mount
   }, []);
 
   return (
@@ -123,7 +142,7 @@ export default function Students() {
           <div className="bg-gray-100  p-4 rounded-lg">
             <div className="overflow-x-auto">
               {!AllStudents.length == 0 ? (
-                <table className="min-w-full bg-white border border-gray-300">
+                <table className="min-w-full  overflow-scroll bg-white border border-gray-300">
                   <thead className="bg-gray-200 text-[12px]">
                     <tr>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
@@ -154,17 +173,20 @@ export default function Students() {
                         Whats Number
                       </th>
                       <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
-                        Update
-                      </th>
-                      <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                         Delete
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {AllStudents?.map((student) => (
-                      <tr className="odd:bg-gray-50" key={student._id}>
-                        <td className="whitespace-nowrap px-4 py-2 text-center font-medium text-gray-900">
+                      <tr
+                        className="odd:bg-gray-50 hover:odd:bg-400 cursor-pointer"
+                        key={student._id}
+                      >
+                        <td
+                          className="whitespace-nowrap px-4 py-2 text-center font-medium text-gray-900 hover:underline hover:text-red-500  cursor-pointer  "
+                          onClick={(e) => handleStudentClick(e, student)}
+                        >
                           {student.firstName} {student.middleName}{" "}
                           {student.lastName}
                         </td>
@@ -196,24 +218,18 @@ export default function Students() {
                         <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
                           {student.whatsapp}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
+                        <th className="px-4 py-2 border-b-2 border-gray-300 text-center">
                           <a
                             href="#"
-                            onClick={(e) => handleStudentClick(e, student)}
-                            className="inline-block w-full rounded hover:shadow-2xl text-xs  bg-sky-600  hover:bg-sky-500  px-4 py-2 font-medium text-white sm:w-auto"
+                            onClick={(e) => confirmDelete(e, student?._id)}
+                            className={
+                              "inline-block w-full rounded-md hover:shadow-2xl  text-[14px] px-2 py-1 font-medium text-white sm:w-auto bg-red-600 hover:bg-red-500 outline-none"
+                            }
                           >
-                            Update
-                          </a>
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-2 text-center text-gray-700">
-                          <a
-                            onClick={(e) => confirmDelete(e, student._id)}
-                            href="#"
-                            className="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-400"
-                          >
+                            {" "}
                             Delete
                           </a>
-                        </td>
+                        </th>
                       </tr>
                     ))}
                   </tbody>
@@ -333,15 +349,17 @@ export default function Students() {
                   />
                 </div>
                 <div>
-                  <input
-                    className="Dashboardinput"
+                  <PhoneInput
+                    containerClass="flex items-center border-none rounded-lg "
+                    inputClass="w-full bg-transparent focus:outline-none  py-2 !h-auto"
+                    buttonClass="border-r border-gray-100 "
+                    className="w-full "
                     placeholder="Whats app Number"
-                    value={formData.whatsapp}
-                    type="number"
-                    required
+                    country={"eg"}
                     min={0}
                     onChange={handleChange}
                     name="whatsapp"
+                    value={formData.whatsapp}
                   />
                 </div>
                 <div>
@@ -378,13 +396,18 @@ export default function Students() {
               <div className="mt-4 flex md:flex-row flex-col items-center gap-5 py-3 ">
                 <button
                   type="submit"
-                  className={`inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto ${
-                    selectedStudent
-                      ? "bg-sky-600 hover:bg-sky-400"
-                      : "bg-green-600 hover:bg-green-500"
-                  }`}
+                  className={
+                    "inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto bg-green-600 hover:bg-green-500 outline-none"
+                  }
                 >
-                  {selectedStudent ? "Update" : "     Add Student"}
+                  Add New Student
+                </button>
+                <button
+                  className={
+                    "inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto bg-sky-600 hover:bg-sky-400 outline-none"
+                  }
+                >
+                  Update
                 </button>
               </div>
             </form>

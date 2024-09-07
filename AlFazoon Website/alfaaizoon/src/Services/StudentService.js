@@ -1,6 +1,4 @@
 import axios from "axios";
-import { useState } from "react";
-
 // Get all students
 export const getStudents = async () => {
   try {
@@ -12,11 +10,11 @@ export const getStudents = async () => {
   }
 };
 // Add student
+
 export const addStudent = async (newData) => {
-  // console.log(newData);
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/v1/Student",
+      "http://localhost:3000/api/v1/Student", // Adjust your API endpoint
       newData,
       {
         headers: {
@@ -24,11 +22,14 @@ export const addStudent = async (newData) => {
         },
       }
     );
-    console.log("Response:", response.data);
-    return response.data; // Return the response data if needed
+    // console.log("Response:", response.data);
+    return { success: true, data: response.data }; // Return success
   } catch (error) {
-    // console.error("Error:", error.data);
-    // throw error; // Rethrow error to handle it in the calling function
+    // console.error("Error:", error.response?.data || error.message);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to add teacher",
+    }; // Return error
   }
 };
 
@@ -40,7 +41,6 @@ export const editStudent = async (studentId, updatedData) => {
       updatedData
     );
     getStudents();
- 
   } catch (error) {
     // console.log(error);
   }
@@ -70,4 +70,3 @@ export const getStudentsCount = async () => {
     // throw error; // Rethrow error to handle it in the calling function if needed
   }
 };
-
