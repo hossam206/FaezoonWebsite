@@ -26,7 +26,7 @@ const studentSchema = new Schema({
     type: Number,
   },
   whatsapp: { type: String, required: true }, // Assuming WhatsApp numbers are unique
-  phone: { type: String, required: true, unique: true }, // Assuming phone numbers are unique
+  phone: { type: String, required: true }, // Assuming phone numbers are unique
   ClassNum: { type: Number, required: true },
   TeacherName: { type: String, required: true },
   // Assuming classID references a Class collection

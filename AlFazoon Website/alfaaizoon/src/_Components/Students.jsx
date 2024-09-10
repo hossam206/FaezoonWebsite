@@ -9,6 +9,8 @@ import {
   getStudents,
   deleteStudent,
 } from "../Services/StudentService";
+import { GetAllTeachers } from "../Services/TeacherServices";
+import teachers from "../../../server/models/teachers";
 
 const initialContent = {
   firstName: "",
@@ -31,6 +33,7 @@ export default function Students() {
   const [AllStudents, setStudents] = useState([]);
   const [popUpmsg, setpopUpmsg] = useState(false);
   const [actionmsg, setactionmsg] = useState("");
+  const [TeachersName, setTeachersName] = useState([]);
 
   // Function to get student data for updating
   const handleStudentClick = (e, StudentDetails) => {
@@ -73,35 +76,74 @@ export default function Students() {
   };
 
   // Function to execute submit action
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     if (selectedStudent) {
+  //       await editStudent(selectedStudent._id, formData);
+  //       setactionmsg("Updating teacher success");
+  //       FormRef.current.reset();
+  //       setFormData(initialContent);
+  //       setselectedStudent(null);
+  //     } else {
+  //       const response = await addStudent(formData);
+
+  //       if (response.success) {
+  //         setactionmsg("Adding new teacher success");
+  //         FormRef.current.reset();
+  //         setFormData(initialContent);
+  //         setselectedStudent(null);
+  //       } else {
+  //         setactionmsg("You should enter a different number");
+  //       }
+  //     }
+
+  //     setpopUpmsg(true);
+  //     fetchStudents(); // Fetch the updated list of teachers
+
+  //     // Empty form and reset state
+  //   } catch (error) {
+  //     console.error("Submission error:", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (selectedStudent) {
+        // Update teacher logic
         await editStudent(selectedStudent._id, formData);
-        setactionmsg("Updating teacher success");
+        setactionmsg("Updating student success");
+
+        // Reset form and clear selected teacher after updating
         FormRef.current.reset();
         setFormData(initialContent);
-        setselectedStudent(null);
+        setselectedStudent(null); // Clear selected teacher after update
       } else {
+        // Add new teacher logic
         const response = await addStudent(formData);
 
         if (response.success) {
-          setactionmsg("Adding new teacher success");
+          setpopUpmsg(true);
+          setactionmsg("Adding new student success");
+          console.log("success");
+
+          // Reset form only if adding the new teacher is successful
           FormRef.current.reset();
           setFormData(initialContent);
-          setselectedStudent(null);
         } else {
+          // If there was an error, e.g., duplicate mobile number
+          setpopUpmsg(true);
           setactionmsg("You should enter a different number");
+          console.log("fails");
         }
       }
-
-      setpopUpmsg(true);
-      fetchStudents(); // Fetch the updated list of teachers
-
-      // Empty form and reset state
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("Error during form submission:", error);
+      setactionmsg("An error occurred. Please try again.");
     }
+    fetchStudents();
   };
 
   // Function to confirm delete student
@@ -128,9 +170,18 @@ export default function Students() {
         }
       });
   };
-
+  // get all teachers Name
+  const GetTeachersName = async () => {
+    try {
+      const teachers = await GetAllTeachers();
+      setTeachersName(teachers);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    fetchStudents(); // Load students on component mount
+    fetchStudents();
+    GetTeachersName(); // Load students on component mount
   }, []);
 
   return (
@@ -311,6 +362,23 @@ export default function Students() {
                     type="text"
                     required
                   />
+                  <div>
+                    {/* <select
+                      name="HeadlineAct"
+                      id="HeadlineAct"
+                      className=" py-3 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                    >
+                      {TeachersName?.map((teacher) => (
+                        <option
+                          key={teacher._id}
+                          onChange={handleChange}
+                          className="Dashboardinput"
+                          placeholder="Teacher Name"
+                          value={formData.TeacherName}
+                        >{`${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`}</option>
+                      ))}
+                    </select> */}
+                  </div>
                 </div>
 
                 <div>

@@ -30,14 +30,14 @@ const teacherSchema = new Schema({
         }
     },
     classID: { type: String, required: true },
-    role: { type: String, enum: ['user','admin'], default: 'user' }, 
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
     firstName: { type: String, required: true },
     middleName: String,
     lastName: { type: String },
     age: {
         type: Number,
     },
-    phone: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
     phone2: String, // Optional second phone number // Assuming classID references a Class collection
     birthDay: { type: Date, required: true },
     nationality: { type: String, required: true },

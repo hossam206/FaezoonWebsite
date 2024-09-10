@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BiSolidHide } from "react-icons/bi";
 import { BiShow } from "react-icons/bi";
+
 import swal from "sweetalert2";
 import {
   addNewTeacher,
@@ -410,7 +411,7 @@ export default function Teachers() {
                     "inline-block w-full rounded-lg hover:shadow-2xl   px-5 py-2 font-medium text-white sm:w-auto bg-green-600 hover:bg-green-500 outline-none"
                   }
                 >
-                  Add New Student
+                  Add New Teacher
                 </button>
                 <button
                   className={

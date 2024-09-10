@@ -5,6 +5,7 @@ import { BiShow } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import useLogin from "../Services/LoginService";
 import Overlay from "./Overlay";
+import { useNavigate } from "react-router";
 
 const LoginInfo = {
   userName: "",
@@ -16,6 +17,7 @@ function LoginForm({ hideform }) {
   const [passwordstatus, showpassword] = useState(false);
   const [formData, setFormData] = useState(LoginInfo);
   const [overlay, showOverlay] = useState(false);
+  const navigate = useNavigate();
   // handle show or hide password
   const handlepassword = () => {
     showpassword(!passwordstatus);
@@ -27,18 +29,41 @@ function LoginForm({ hideform }) {
     setFormData({ ...formData, [name]: value });
   };
   // Login Func
+  // const Login = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await VerifyLogin(formData);
+  //     showOverlay(true);
+  //     setTimeout(() => {
+  //       showOverlay(false);
+  //     }, 1000);
+  //   } catch (error) {
+  //     setErrormsg(true); // Show error message
+  //     console.error("Login failed:", error);
+  //     showOverlay(false);
+  //   }
+  // };
   const Login = async (e) => {
     e.preventDefault();
     try {
-      await VerifyLogin(formData);
-
-      showOverlay(true);
+      const role = await VerifyLogin(formData); // Await the result of VerifyLogin
+      if (role === "admin") {
+        showOverlay(true);
+        setTimeout(() => {
+          navigate("/Dashboard");
+        }, 1000);
+      } else if (role === "user") {
+        showOverlay(true);
+        setTimeout(() => {
+          navigate("/UserPage");
+        }, 1000);
+      }
       setTimeout(() => {
         showOverlay(false);
       }, 1000);
     } catch (error) {
       setErrormsg(true); // Show error message
-      console.error("Login failed:", error);
+      // console.error("Login failed:", error.message); // Log the actual error message
       showOverlay(false);
     }
   };
@@ -122,7 +147,7 @@ function LoginForm({ hideform }) {
               </div>
               {errormsg && (
                 <p className="text-red-600 animate-pulse py-2">
-                  It looks like userId or password isn't correct, try again
+                  Invalid UserName or password, Try again
                 </p>
               )}
             </div>

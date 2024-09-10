@@ -28,7 +28,7 @@ export const addStudent = async (newData) => {
     // console.error("Error:", error.response?.data || error.message);
     return {
       success: false,
-      message: error.response?.data?.message || "Failed to add teacher",
+      message: error.response?.data?.message || "Failed to add student",
     }; // Return error
   }
 };

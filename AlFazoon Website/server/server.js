@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import router from "./routes/router.js";
+import cors from "cors";
 
 import dotenv from "dotenv";
 
@@ -20,7 +21,6 @@ const dbURI = process.env.DB_URI
 
 //console.log(uri)
 const app = express();
-import cors from "cors";
 app.use(
   cors({
     origin: ORIGIN,
