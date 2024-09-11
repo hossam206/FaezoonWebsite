@@ -53,10 +53,20 @@ app.use(express.static(path.join(__dirname, 'alfaaizoon', 'dist'), {
   }
 }));
 
+app.use(express.static(path.join(__dirname, 'alfaaizoon', 'src'), {
+  setHeaders: function (res, filePath) {
+    // Set the correct MIME type for JavaScript files
+    if (filePath.endsWith('.js')) {
+      res.set('Content-Type', 'application/javascript');
+    }
+    if (filePath.endsWith('.jsx')) {
+      res.set('Content-Type', 'application/javascript'); // JSX should be transpiled before deployment
+    }
+  }
+}));
+
 // Handle all other routes by serving the index.html (Single Page Application)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'alfaaizoon', 'dist', 'index.html'));
-});
+
 
 // Set up body parsers for handling JSON and URL-encoded data
 app.use(express.json());
@@ -64,7 +74,12 @@ app.use(express.urlencoded({ extended: false }));
 
 // Set up API routes
 app.use("/api", router);
+// /api/v1/Students/Count
 
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'alfaaizoon', 'dist', 'index.html'));
+});
 // Start the server
 app.listen(port, host, () => {
   console.log(`Server running on Host ${host} Port ${port}...\n`);

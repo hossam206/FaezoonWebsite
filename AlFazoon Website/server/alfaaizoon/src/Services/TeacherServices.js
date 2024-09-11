@@ -1,4 +1,5 @@
 import axios from "axios";
+import { config } from "./../../config";
 //import {jwt} from 'jwt-decode'
 
 // const Token = localStorage.getItem("Maintoken");
@@ -7,7 +8,7 @@ export const GetAllTeachers = async () => {
   try {
     const Token = localStorage.getItem("Maintoken");
     const response = await axios.post(
-      "http://localhost:3000/api/v1/teachers",
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/teachers`,
       {},
       {
         headers: {
@@ -28,7 +29,7 @@ export const addNewTeacher = async (postData) => {
   const Token = localStorage.getItem("Maintoken");
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/v1/teacher",
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/teacher`,
       postData,
       {
         headers: {
@@ -53,7 +54,7 @@ export const updateTeacher = async (TeacherId, UpdatedData) => {
   const Token = localStorage.getItem("Maintoken");
   try {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/teacher/${TeacherId}`,
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/teacher/${TeacherId}`,
       UpdatedData,
       {
         headers: {
@@ -74,10 +75,10 @@ export const DeleteTeacher = async (TeacherId) => {
 
   try {
     let Token = localStorage.getItem("Maintoken");
-    
+
 
     const response = await axios.delete(
-      `http://localhost:3000/api/v1/teacher/d/${TeacherId}`,
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/teacher/d/${TeacherId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +101,7 @@ export const getTeachersCount = async () => {
   const Token = localStorage.getItem("Maintoken");
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/v1/teachers/Count",
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/teachers/Count`,
       {},
       {
         headers: {

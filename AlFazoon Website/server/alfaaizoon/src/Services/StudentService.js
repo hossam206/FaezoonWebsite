@@ -1,8 +1,9 @@
 import axios from "axios";
+import { config } from "./../../config";
 // Get all students
 export const getStudents = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/api/v1/Students");
+    const response = await axios.get(`${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/Students`);
     return response.data; // Assuming response.data contains the list of students
   } catch (error) {
     // console.error("Failed to fetch students:", error.data); // Use console.error for errors
@@ -14,7 +15,7 @@ export const getStudents = async () => {
 export const addStudent = async (newData) => {
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/v1/Student", // Adjust your API endpoint
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/Student`, // Adjust your API endpoint
       newData,
       {
         headers: {
@@ -37,7 +38,7 @@ export const addStudent = async (newData) => {
 export const editStudent = async (studentId, updatedData) => {
   try {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/Student/${studentId}`,
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/Student/${studentId}`,
       updatedData
     );
     getStudents();
@@ -50,7 +51,7 @@ export const editStudent = async (studentId, updatedData) => {
 export const deleteStudent = async (studentId) => {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/v1/Student/${studentId}`
+     `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/Student/${studentId}`
     );
     return response.data;
   } catch (error) {
@@ -62,7 +63,7 @@ export const deleteStudent = async (studentId) => {
 export const getStudentsCount = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:3000/api/v1/Students/Count"
+      `${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/Students/Count`
     );
     return response.data; // Assuming response.data contains the list of students
   } catch (error) {
