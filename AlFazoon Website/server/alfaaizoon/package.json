@@ -13,6 +13,8 @@
     "@vitalets/google-translate-api": "^9.2.0",
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
+    "dot-env": "^0.0.1",
+    "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",

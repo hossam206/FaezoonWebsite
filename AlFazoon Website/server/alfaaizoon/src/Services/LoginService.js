@@ -1,8 +1,14 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { config } from "./../../config";
+// import dotenv from "dotenv";
+// dotenv.config();
+// const host = process.env.REACT_APP_HOST;
+
 
 const useLogin = () => {
+
   const navigate = useNavigate();
 
   // const VerifyLogin = (UserData) => {
@@ -38,9 +44,16 @@ const useLogin = () => {
   // };
 
   const VerifyLogin = (UserData) => {
+  //  console.log(config.REACT_APP_HOST)
+    // console.log(host)
     return new Promise((resolve, reject) => {
+      console.log(`${config.REACT_APP_HOST}:${config.REACT_APP_PORT}`)
+     // console.log(`http://localhost:3000/api/v1/login`)
+      //console.log(`${config.API_URI}/api/v1/login`)
+
+      //  console.error(process.env.REACT_APP_HOST)
       axios
-        .post("http://localhost:3000/api/v1/login", UserData, {
+        .post(`${config.REACT_APP_HOST}:${config.REACT_APP_PORT}/api/v1/login`, UserData, {
           headers: {
             "Content-Type": "application/json",
           },
