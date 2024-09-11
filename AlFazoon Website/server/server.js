@@ -19,8 +19,6 @@ const host = process.env.HOST || 'localhost'; // Default to 'localhost' if not s
 const ORIGIN = process.env.ORIGIN;
 const dbURI = process.env.DB_URI;
 
-console.log(__dirname);
-console.log(__filename);
 
 const app = express();
 

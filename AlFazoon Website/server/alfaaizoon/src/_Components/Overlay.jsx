@@ -7,7 +7,7 @@ export default function Overlay({ title }) {
         <div className="text-2xl text-textColor font-medium flex flex-row items-center">
           <div className="w-14 h-14 overflow-hidden ">
             <img
-              src="../../public/images/loader.svg"
+              src="/images/loader.svg"
               loading="lazy"
               className="w-full h-full"
             />

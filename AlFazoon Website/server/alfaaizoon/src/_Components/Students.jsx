@@ -132,11 +132,6 @@ export default function Students() {
           // Reset form only if adding the new teacher is successful
           FormRef.current.reset();
           setFormData(initialContent);
-        } else {
-          // If there was an error, e.g., duplicate mobile number
-          setpopUpmsg(true);
-          setactionmsg("You should enter a different number");
-          console.log("fails");
         }
       }
     } catch (error) {
@@ -324,7 +319,6 @@ export default function Students() {
                     className="Dashboardinput"
                     placeholder="Second Name"
                     type="text"
-                    required
                   />
                 </div>
                 <div className="">

@@ -80,11 +80,6 @@ export default function Teachers() {
           // Reset form only if adding the new teacher is successful
           formRef.current.reset();
           setFormData(initialContent);
-        } else {
-          // If there was an error, e.g., duplicate mobile number
-          setpopUpmsg(true);
-          setactionmsg("You should enter a different number");
-          console.log("fails");
         }
       }
     } catch (error) {
@@ -276,7 +271,6 @@ export default function Teachers() {
                     className="Dashboardinput"
                     placeholder="Second Name"
                     type="text"
-                    required
                     name="middleName"
                     onChange={handleChange}
                     value={formData.middleName}
