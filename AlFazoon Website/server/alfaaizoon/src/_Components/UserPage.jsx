@@ -924,7 +924,7 @@ function UserPage() {
                     أرسل البيانات
                   </a>
                 </div>
-              </div>
+              </div>z
             )}
             {/* end textarea translation */}
           </div>
